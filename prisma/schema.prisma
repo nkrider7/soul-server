@@ -14,24 +14,44 @@ datasource db {
 }
 
 model User {
-  id             String     @id @default(uuid())
-  email          String     @unique
-  username       String     @default("player")
-  lastActiveDate DateTime?  @default(now())
-  character      Character?
-  inventory      Item[]
-  currencies     Currency?
-  habits         Habit[]
-  quests         Quest[]
-  createdAt      DateTime   @default(now())
-  level          Int        @default(1)
-  xp             Int        @default(0)
-  rank           Rank       @default(E)
-  avatar         String?    @default("")
-  stats          Json
-  streak         Int        @default(0)
-  maxStreak      Int        @default(0)
+  id             String   @id @default(uuid())
+  email          String   @unique
+  posts          Int      @default(0)
+  authToken      String
+  Profile        Profile?
   Posts          Posts[]
+  createdAt      DateTime @default(now())
+  lastActiveDate DateTime @default(now())
+}
+
+model Profile {
+  id          String     @id @default(uuid())
+  fullname    String     @default("player")
+  character   Character?
+  dateOfBirth DateTime
+  gender      Gender
+  height      Int
+  weight      Int
+  level       Int        @default(1)
+  xp          Int        @default(0)
+  rank        Rank       @default(E)
+  avatar      String?    @default("")
+  stats       Json?      @default("{\"strength\": 1, \"intelligence\": 1, \"karma\": 1, \"stamina\": 1}")
+  streak      Int        @default(0)
+  maxStreak   Int        @default(0)
+  inventory   Item[]
+  currencies  Currency?  @relation(fields: [currencyId], references: [id])
+  currencyId  String?
+  habits      Habit[]
+  quests      Quest[]
+  user        User       @relation(fields: [userId], references: [id])
+  userId      String     @unique
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
 }
 
 enum Rank {
@@ -51,23 +71,23 @@ model Character {
   image     String?
   fullImage String?
   bgImage   String?
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String   @unique
+  profile   Profile  @relation(fields: [profileId], references: [id])
+  profileId String   @unique
 }
 
 model Quest {
-  id          String @id @default(uuid())
+  id          String   @id @default(uuid())
   title       String
   description String
-  progress    Int    @default(0)
+  progress    Int      @default(0)
   goal        Int
-  status      String @default("pending")
+  status      String   @default("pending")
   type        String
-  createdBy   String @default("user") // or "system"
-  user        User   @relation(fields: [userId], references: [id])
-  userId      String
   checklist   Json?
   rewards     Json?
+  Profile     Profile? @relation(fields: [profileId], references: [id])
+  profileId   String?
+  createdBy   String   @default("user")
 }
 
 model Habit {
@@ -77,28 +97,27 @@ model Habit {
   createdAt   DateTime @default(now())
   reminder    Json?
   subtasks    Json?
-  user        User     @relation(fields: [userId], references: [id])
-  userId      String
+  Profile     Profile? @relation(fields: [profileId], references: [id])
+  profileId   String?
 }
 
 model Currency {
-  id     String @id @default(uuid())
-  coins  Int    @default(0)
-  gems   Int    @default(0)
-  user   User   @relation(fields: [userId], references: [id])
-  userId String @unique
+  id      String    @id @default(uuid())
+  coins   Int       @default(0)
+  gems    Int       @default(0)
+  Profile Profile[]
 }
 
 model Item {
-  id           String  @id @default(uuid())
+  id           String   @id @default(uuid())
   name         String
   description  String
   type         String
   icon         String?
   price        Int?
   currencyType String? // coins/gems
-  user         User    @relation(fields: [userId], references: [id])
-  userId       String
+  Profile      Profile? @relation(fields: [profileId], references: [id])
+  profileId    String?
 }
 
 model Posts {
@@ -110,6 +129,7 @@ model Posts {
   comments  Json?
   tags      String[]
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
+  updatedAt DateTime @updatedAt
+  User      User     @relation(fields: [userId], references: [id])
   userId    String
 }

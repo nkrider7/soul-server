@@ -2,10 +2,10 @@ import * as admin from "firebase-admin";
 import { prisma } from "..";
 import { NextFunction, Request, Response } from "express";
 
-// Initialize Firebase Admin SDK (should be done once globally)
+const serviceAccount = require("../utils/soulserver_firebase_admin.json");
+
 admin.initializeApp({
-  credential: admin.credential.cert(require("./firebase-admin.json")),
-  // optional: databaseURL if needed
+  credential: admin.credential.cert(serviceAccount),
 });
 
 declare global {
@@ -26,11 +26,9 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
     const idToken = authHeader.split(" ")[1];
 
-    const { uid, email } = await admin.auth().verifyIdToken(idToken);
+    const { uid, email, email_verified } = await admin.auth().verifyIdToken(idToken);
 
-    const user = await prisma.profile.findUnique({
-      where: { userId: uid },
-    });
+    const user = await prisma.user.findUnique({ where: { id: uid } });
 
     if (!user) {
       return res.status(401).json({ message: "Unauthorized" });

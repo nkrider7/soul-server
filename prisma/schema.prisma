@@ -26,27 +26,28 @@ model User {
 }
 
 model Profile {
-  id          String     @id @default(uuid())
-  fullname    String     @default("player")
+  id          String      @id @default(uuid())
+  fullname    String      @default("player")
   character   Character?
   dateOfBirth DateTime
   gender      Gender
   height      Int
   weight      Int
-  level       Int        @default(1)
-  xp          Int        @default(0)
-  rank        Rank       @default(E)
-  avatar      String?    @default("")
-  stats       Json?      @default("{\"strength\": 1, \"intelligence\": 1, \"karma\": 1, \"stamina\": 1}")
-  streak      Int        @default(0)
-  maxStreak   Int        @default(0)
+  level       Int         @default(1)
+  xp          Int         @default(0)
+  rank        Rank        @default(E)
+  avatar      String?     @default("")
+  stats       Json?       @default("{\"strength\": 1, \"intelligence\": 1, \"karma\": 1, \"stamina\": 1}")
+  streak      Int         @default(0)
+  maxStreak   Int         @default(0)
   inventory   Item[]
-  currencies  Currency?  @relation(fields: [currencyId], references: [id])
+  currencies  Currency?   @relation(fields: [currencyId], references: [id])
   currencyId  String?
   habits      Habit[]
   quests      Quest[]
-  user        User       @relation(fields: [userId], references: [id])
-  userId      String     @unique
+  user        User        @relation(fields: [userId], references: [id])
+  userId      String      @unique
+  challenges  Challenge[]
 }
 
 enum Gender {
@@ -133,4 +134,42 @@ model Posts {
   updatedAt DateTime @updatedAt
   User      User     @relation(fields: [userId], references: [id])
   userId    String
+}
+
+model Challenge {
+  id          String           @id @default(uuid())
+  name        String
+  description String
+  category    String
+  difficulty  String
+  duration    Int
+  start       DateTime
+  end         DateTime
+  status      String
+  image       String?
+  createdBy   String
+  rewards     Json
+  quests      ChallengeQuest[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  Profile     Profile?         @relation(fields: [profileId], references: [id])
+  profileId   String?
+}
+
+model ChallengeQuest {
+  id          String    @id @default(uuid())
+  day         Int
+  title       String
+  targetCount Int?
+  start       DateTime
+  end         DateTime
+  repeat      Boolean   @default(true)
+  description String
+  type        String
+  completed   Boolean   @default(false)
+  xpReward    Int?
+  coinReward  Int?
+  statReward  Json?
+  challenge   Challenge @relation(fields: [challengeId], references: [id])
+  challengeId String
 }

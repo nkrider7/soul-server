@@ -44,7 +44,6 @@ model Profile {
   currencies  Currency?   @relation(fields: [currencyId], references: [id])
   currencyId  String?
   habits      Habit[]
-  quests      Quest[]
   user        User        @relation(fields: [userId], references: [id])
   userId      String      @unique
   challenges  Challenge[]
@@ -75,21 +74,6 @@ model Character {
   bgImage   String?
   profile   Profile  @relation(fields: [profileId], references: [id])
   profileId String   @unique
-}
-
-model Quest {
-  id          String   @id @default(uuid())
-  title       String
-  description String
-  progress    Int      @default(0)
-  goal        Int
-  status      String   @default("pending")
-  type        String
-  checklist   Json?
-  rewards     Json?
-  Profile     Profile? @relation(fields: [profileId], references: [id])
-  profileId   String?
-  createdBy   String   @default("user")
 }
 
 model Habit {
@@ -158,18 +142,26 @@ model Challenge {
 
 model ChallengeQuest {
   id          String    @id @default(uuid())
-  day         Int
   title       String
-  targetCount Int?
+  description String
+  currentDay  Int?
+  totalDays   Int?
   start       DateTime
   end         DateTime
-  repeat      Boolean   @default(true)
-  description String
+  repeat      REPEAT    @default(DAILY)
   type        String
-  completed   Boolean   @default(false)
+  status      String    @default("in-progress")
   xpReward    Int?
   coinReward  Int?
   statReward  Json?
   challenge   Challenge @relation(fields: [challengeId], references: [id])
   challengeId String
+}
+
+enum REPEAT {
+  DAILY
+  ALTERNATE_DAYS
+  WEEKDAYS
+  WEEKENDS
+  WEEKLY
 }

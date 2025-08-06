@@ -5,7 +5,8 @@ import logger from "./utils/logger";
 import { PrismaClient } from "@prisma/client";
 import authRoutes from "./routes/auth.route";
 import profileRoutes from "./routes/profile.route";
-import challengerutes from "./routes/challenge.route";
+import challengeRoutes from "./routes/challenge.route";
+import questRoutes from "./routes/quest.route";
 
 dotenv.config();
 
@@ -21,7 +22,8 @@ app.use(express.json());
 // ---------- Routes ----------
 app.use("/auth", authRoutes);
 app.use("/profile", profileRoutes);
-app.use("/challenge", challengerutes);
+app.use("/challenge", challengeRoutes);
+app.use("/quest/:challengeId", questRoutes);
 
 // ---------- Health Check ----------
 app.get("/health", async (req: Request, res: Response) => {

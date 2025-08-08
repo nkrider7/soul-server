@@ -23,7 +23,7 @@ app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/profile", profileRoutes);
 app.use("/challenge", challengeRoutes);
-app.use("/quest/:challengeId", questRoutes);
+app.use("/quest", questRoutes);
 
 // ---------- Health Check ----------
 app.get("/health", async (req: Request, res: Response) => {

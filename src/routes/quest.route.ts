@@ -4,7 +4,7 @@ import { authMiddleware } from "../middleware/auth.middleware";
 
 const router = Router();
 
-router.post("/", async (req, res, next) => {
+router.post("/:challengeId", async (req, res, next) => {
   authMiddleware(req, res, async () => {
     try {
       await createQuest(req, res);
@@ -13,7 +13,7 @@ router.post("/", async (req, res, next) => {
     }
   });
 });
-router.patch("/:id", async (req, res, next) => {
+router.patch("/:challengeId/:id", async (req, res, next) => {
   authMiddleware(req, res, async () => {
     try {
       await updateQuest(req, res);
@@ -22,7 +22,7 @@ router.patch("/:id", async (req, res, next) => {
     }
   });
 });
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:challengeId/:id", async (req, res, next) => {
   authMiddleware(req, res, async () => {
     try {
       await deleteQuest(req, res);
@@ -31,7 +31,7 @@ router.delete("/:id", async (req, res, next) => {
     }
   });
 });
-router.get("/:id", async (req, res, next) => {
+router.get("/:challengeId/:id", async (req, res, next) => {
   authMiddleware(req, res, async () => {
     try {
       await getQuest(req, res);
@@ -40,7 +40,7 @@ router.get("/:id", async (req, res, next) => {
     }
   });
 });
-router.get("/", async (req, res, next) => {
+router.get("/:challengeId", async (req, res, next) => {
   authMiddleware(req, res, async () => {
     try {
       await getAllQuests(req, res);

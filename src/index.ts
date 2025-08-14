@@ -7,6 +7,7 @@ import authRoutes from "./routes/auth.route";
 import profileRoutes from "./routes/profile.route";
 import challengeRoutes from "./routes/challenge.route";
 import questRoutes from "./routes/quest.route";
+import characterRoutes from "./routes/character.route";
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use("/auth", authRoutes);
 app.use("/profile", profileRoutes);
 app.use("/challenge", challengeRoutes);
 app.use("/quest", questRoutes);
+app.use("/character", characterRoutes);
 
 // ---------- Health Check ----------
 app.get("/health", async (req: Request, res: Response) => {

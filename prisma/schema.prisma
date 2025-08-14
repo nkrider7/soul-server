@@ -13,12 +13,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum Rank {
+  E
+  D
+  C
+  B
+  A
+  S
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
 model User {
   id             String   @id @default(uuid())
   email          String   @unique
   isVerified     Boolean  @default(false)
   posts          Int      @default(0)
-  authToken      String
+  role           Role     @default(USER)
   Profile        Profile?
   Posts          Posts[]
   createdAt      DateTime @default(now())
@@ -28,7 +48,7 @@ model User {
 model Profile {
   id          String      @id @default(uuid())
   fullname    String      @default("player")
-  character   Character?
+  character   String?
   dateOfBirth DateTime
   gender      Gender
   height      Int
@@ -49,31 +69,21 @@ model Profile {
   challenges  Challenge[]
 }
 
-enum Gender {
-  MALE
-  FEMALE
-  OTHER
-}
-
-enum Rank {
-  E
-  D
-  C
-  B
-  A
-  S
-}
-
 model Character {
-  id        String   @id @default(uuid())
-  name      String
-  gender    String
-  powers    String[]
-  image     String?
-  fullImage String?
-  bgImage   String?
-  profile   Profile  @relation(fields: [profileId], references: [id])
-  profileId String   @unique
+  id            String   @id @default(uuid())
+  name          String
+  title         String
+  gender        Gender
+  element       String?
+  description   String?
+  personality   String?
+  backstory     String?
+  powers        String[]
+  image         String?
+  fullImage     String?
+  bgImage       String?
+  animatedImage String?
+  statsBoost    Json?
 }
 
 model Habit {

@@ -4,13 +4,13 @@ import { onboardSchema } from "../validation/onboard.validation";
 
 export const onboardUser = async (req: Request, res: Response) => {
   try {
-    const { uid, email, authToken } = req.body;
+    const { uid, email } = req.body;
 
     if (!uid || !email) {
       return res.status(400).json({ error: "Missing UID or email" });
     }
 
-    const { success, data, error } = onboardSchema.safeParse({ uid, email, authToken });
+    const { success, error } = onboardSchema.safeParse({ uid, email, });
 
     if (!success) {
       return res.status(400).json({ error: error.flatten().fieldErrors });
@@ -33,8 +33,7 @@ export const onboardUser = async (req: Request, res: Response) => {
       data: {
         id: uid,
         email,
-        authToken,
-      },
+      }
     });
 
     return res.status(201).json({ message: "User onboarded", user: newUser });

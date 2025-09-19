@@ -112,9 +112,20 @@ const getChallenge = async (req: Request, res: Response) => {
 
 const getChallenges = async (req: Request, res: Response) => {
   try {
+    const profile = await prisma.profile.findUnique({
+      where: { userId: req.user.id },
+    });
+
+    if (!profile) {
+      return res.status(404).json({ error: "User profile not found" });
+    }
+
     const challenges = await prisma.challenge.findMany({
       where: {
-        createdBy: req.user.uid,
+        profileId: profile.id,
+      },
+      include: {
+        Profile: true,
       },
     });
 

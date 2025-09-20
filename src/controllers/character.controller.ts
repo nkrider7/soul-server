@@ -171,8 +171,10 @@ const getCharacters = async (req: Request, res: Response) => {
         title: true,
         gender: true,
         element: true,
+        personality: true,
         powers: true,
         image: true,
+        fullImage: true,
         bgImage: true,
       }
     });

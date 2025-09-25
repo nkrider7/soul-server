@@ -11,6 +11,7 @@ export const createProfileSchema = z.object({
 
 export const updateProfileSchema = z.object({
   fullname: z.string().min(3).optional(),
+  character: z.string().optional(),
   dateOfBirth: z
     .string()
     .transform((val) => new Date(val))

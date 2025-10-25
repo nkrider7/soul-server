@@ -29,7 +29,6 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     const { uid, email, email_verified } = await admin.auth().verifyIdToken(idToken);
 
     const user = await prisma.user.findUnique({ where: { id: uid } });
-    console.log(user)
 
     if (!user) {
       return res.status(401).json({ message: "Unauthorized" });

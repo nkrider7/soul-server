@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
-import { prisma } from "../";
+import { prisma } from "../index";
 import { questValidationSchema, updateQuestValidationSchema } from "../validation/quest.validation";
-import z from "zod";
+import { z } from "zod";
 
 const createQuest = async (req: Request, res: Response) => {
   try {
     const { success, data, error } = questValidationSchema.safeParse(req.body);
     if (!success) {
-      return res.status(400).json({ error: z.prettifyError(error) });
+      return res.status(400).json({ error: error.errors });
     }
 
     const challengeId = req.params.challengeId;
@@ -48,7 +48,7 @@ const updateQuest = async (req: Request, res: Response) => {
     }
     const { success, data, error } = updateQuestValidationSchema.safeParse(req.body);
     if (!success) {
-      return res.status(400).json({ error: z.prettifyError(error) });
+      return res.status(400).json({ error: error.errors });
     }
     const quest = await prisma.challengeQuest.findUnique({
       where: { id },

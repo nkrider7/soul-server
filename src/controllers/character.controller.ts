@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { characterValidation } from "../validation/character.validation";
-import { prisma } from "..";
+import { prisma } from "../index";
 import { deleteOnCloudinary, uploadOnCloudinary } from "../utils/cloudinary";
-import z from "zod";
+import { z } from "zod";
 
 const createCharacter = async (req: Request, res: Response) => {
   try {
@@ -13,7 +13,7 @@ const createCharacter = async (req: Request, res: Response) => {
 
     const { success, error, data } = characterValidation.safeParse(req.body);
     if (!success) {
-      return res.status(400).json({ error: z.prettifyError(error) });
+      return res.status(400).json({ error: error.errors });
     }
 
     const imageUrls = await Promise.all([
@@ -94,7 +94,7 @@ const updateCharacter = async (req: Request, res: Response) => {
 
     const { success, error, data } = characterValidation.safeParse(req.body);
     if (!success) {
-      return res.status(400).json({ error: z.prettifyError(error) });
+      return res.status(400).json({ error: error.errors });
     }
 
     const updatedCharacterData = {

@@ -20,6 +20,14 @@ const PORT = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json());
 
+// Request logging middleware
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const timestamp = new Date().toISOString();
+  console.log(`[${timestamp}] ${req.method} ${req.path}`);
+  logger.info(`${req.method} ${req.path}`);
+  next();
+});
+
 // ---------- Routes ----------
 app.use("/auth", authRoutes);
 app.use("/profile", profileRoutes);
@@ -38,9 +46,33 @@ app.get("/health", async (req: Request, res: Response) => {
 });
 
 // ---------- Error Handler ----------
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  logger.error(err.message);
-  res.status(500).json({ error: "Internal server error" });
+app.use((err: any, req: Request, res: Response, next: NextFunction): void => {
+  logger.error(err.message || "Internal server error");
+  
+  // Handle ErrorHandler instances
+  if (err.statusCode) {
+    res.status(err.statusCode).json({
+      success: false,
+      error: err.message || "An error occurred",
+    });
+    return;
+  }
+
+  // Handle Zod validation errors
+  if (err.name === "ZodError") {
+    res.status(400).json({
+      success: false,
+      error: "Validation error",
+      details: err.errors,
+    });
+    return;
+  }
+
+  // Default error response
+  res.status(500).json({
+    success: false,
+    error: "Internal server error",
+  });
 });
 
 // ---------- Start Server ----------
@@ -53,7 +85,8 @@ const start = async () => {
       logger.info(`🚀 Server running on port ${PORT}`);
     });
   } catch (err: any) {
-    logger.error("❌ Failed to start server:", err.message);
+    console.error("❌ Failed to start server:", err);
+    logger.error("❌ Failed to start server:", err);
     process.exit(1);
   }
 };

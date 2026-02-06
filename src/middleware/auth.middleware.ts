@@ -1,12 +1,6 @@
-import * as admin from "firebase-admin";
-import { prisma } from "..";
+import { prisma } from "../index";
 import { NextFunction, Request, Response } from "express";
-
-const serviceAccount = require("../utils/soulserver_firebase_admin.json");
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+import { createClient } from "@supabase/supabase-js";
 
 declare global {
   namespace Express {
@@ -24,14 +18,36 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
       return res.status(401).json({ message: "No token provided" });
     }
 
-    const idToken = authHeader.split(" ")[1];
+    const accessToken = authHeader.split(" ")[1];
 
-    const { uid, email, email_verified } = await admin.auth().verifyIdToken(idToken);
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 
-    const user = await prisma.user.findUnique({ where: { id: uid } });
+    if (!supabaseUrl || !supabaseAnonKey) {
+      return res.status(500).json({ message: "Server configuration error" });
+    }
+
+    // Create a Supabase client with the token for verification
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    });
+
+    // Verify the token with Supabase
+    const { data: { user: supabaseUser }, error } = await supabaseClient.auth.getUser(accessToken);
+
+    if (error || !supabaseUser) {
+      return res.status(401).json({ message: "Invalid or expired token" });
+    }
+
+    // Find user in database using Supabase user ID
+    const user = await prisma.user.findUnique({ where: { id: supabaseUser.id } });
 
     if (!user) {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res.status(401).json({ message: "User not found" });
     }
 
     req.user = user;

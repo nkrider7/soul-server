@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { prisma } from "..";
+import { prisma } from "../index";
 import { createProfileSchema, updateProfileSchema } from "../validation/profile.validation";
-import z from "zod";
+import { z } from "zod";
 
 export const getProfile = async (req: Request, res: Response) => {
   try {
@@ -35,7 +35,7 @@ export const createProfile = async (req: Request, res: Response) => {
 
     const { success, data, error } = createProfileSchema.safeParse(req.body);
     if (!success) {
-      return res.status(400).json({ error: z.prettifyError(error) });
+      return res.status(400).json({ error: error.errors });
     }
 
     const profile = await prisma.profile.create({
@@ -65,7 +65,7 @@ export const updateProfile = async (req: Request, res: Response) => {
 
     const { success, data, error } = updateProfileSchema.safeParse(req.body);
     if (!success) {
-      return res.status(400).json({ error: z.prettifyError(error) });
+      return res.status(400).json({ error: error.errors });
     }
 
     const profile = await prisma.profile.update({

@@ -35,7 +35,7 @@ export const createProfile = async (req: Request, res: Response) => {
 
     const { success, data, error } = createProfileSchema.safeParse(req.body);
     if (!success) {
-      return res.status(400).json({ error: error.errors });
+      return res.status(400).json({ error: error.issues });
     }
 
     const profile = await prisma.profile.create({
@@ -65,7 +65,7 @@ export const updateProfile = async (req: Request, res: Response) => {
 
     const { success, data, error } = updateProfileSchema.safeParse(req.body);
     if (!success) {
-      return res.status(400).json({ error: error.errors });
+      return res.status(400).json({ error: error.issues });
     }
 
     const profile = await prisma.profile.update({

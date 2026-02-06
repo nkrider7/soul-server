@@ -8,7 +8,7 @@ const createChallenge = async (req: Request, res: Response) => {
     const { success, data, error } = challengeValidation.safeParse(req.body);
 
     if (!success) {
-      return res.status(400).json({ error: error.errors });
+      return res.status(400).json({ error: error.issues });
     }
 
     const userProfile = await prisma.profile.findUnique({
@@ -46,7 +46,7 @@ const updateChallenge = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { success, data, error } = updateChallengeValidation.safeParse(req.body);
     if (!success) {
-      return res.status(400).json({ error: error.errors });
+      return res.status(400).json({ error: error.issues });
     }
 
     const userProfile = await prisma.profile.findUnique({

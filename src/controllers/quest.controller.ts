@@ -7,7 +7,7 @@ const createQuest = async (req: Request, res: Response) => {
   try {
     const { success, data, error } = questValidationSchema.safeParse(req.body);
     if (!success) {
-      return res.status(400).json({ error: error.errors });
+      return res.status(400).json({ error: error.issues });
     }
 
     const challengeId = req.params.challengeId;
@@ -48,7 +48,7 @@ const updateQuest = async (req: Request, res: Response) => {
     }
     const { success, data, error } = updateQuestValidationSchema.safeParse(req.body);
     if (!success) {
-      return res.status(400).json({ error: error.errors });
+      return res.status(400).json({ error: error.issues });
     }
     const quest = await prisma.challengeQuest.findUnique({
       where: { id },

@@ -35,7 +35,7 @@ export const register = async (req: Request, res: Response) => {
 
     if (!success) {
       const formattedError =
-        error.errors?.map((issue) => issue.message).join(", ") ||
+        error.issues?.map((issue: any) => issue.message).join(", ") ||
         "Invalid input data";
       throw new ErrorHandler(
         "Invalid input: " + formattedError,
@@ -156,7 +156,7 @@ export const login = async (req: Request, res: Response) => {
   const { success, data, error } = loginSchema.safeParse(req.body);
 
   if (!success) {
-    return res.status(400).json({ error: error.errors });
+    return res.status(400).json({ error: error.issues });
   }
 
   const { email, password } = data;
@@ -233,7 +233,7 @@ export const refreshToken = async (req: Request, res: Response) => {
   const { success, data, error } = refreshTokenSchema.safeParse(req.body);
 
   if (!success) {
-    return res.status(400).json({ error: error.errors });
+    return res.status(400).json({ error: error.issues });
   }
 
   const { refresh_token } = data;
@@ -276,7 +276,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
   const { success, data, error } = forgotPasswordSchema.safeParse(req.body);
 
   if (!success) {
-    return res.status(400).json({ error: error.errors });
+    return res.status(400).json({ error: error.issues });
   }
 
   const { email } = data;
@@ -300,7 +300,7 @@ export const resetPassword = async (req: Request, res: Response) => {
   const { success, data, error } = resetPasswordSchema.safeParse(req.body);
 
   if (!success) {
-    return res.status(400).json({ error: error.errors });
+    return res.status(400).json({ error: error.issues });
   }
 
   const { access_token, password } = data;
@@ -413,7 +413,7 @@ export const updateCurrentUser = async (req: Request, res: Response) => {
   const { success, data, error } = updateUserSchema.safeParse(req.body);
 
   if (!success) {
-    return res.status(400).json({ error: error.errors });
+    return res.status(400).json({ error: error.issues });
   }
 
   // Update user in Prisma

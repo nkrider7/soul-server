@@ -13,7 +13,7 @@ const createCharacter = async (req: Request, res: Response) => {
 
     const { success, error, data } = characterValidation.safeParse(req.body);
     if (!success) {
-      return res.status(400).json({ error: error.errors });
+      return res.status(400).json({ error: error.issues });
     }
 
     const imageUrls = await Promise.all([
@@ -94,7 +94,7 @@ const updateCharacter = async (req: Request, res: Response) => {
 
     const { success, error, data } = characterValidation.safeParse(req.body);
     if (!success) {
-      return res.status(400).json({ error: error.errors });
+      return res.status(400).json({ error: error.issues });
     }
 
     const updatedCharacterData = {

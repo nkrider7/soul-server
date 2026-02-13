@@ -15,7 +15,7 @@ import { authMiddleware } from "../middleware/auth.middleware";
 
 const router = Router();
 
-// Public routes
+// Public routes sds
 router.post("/register", (req, res, next) => {
   TryCatch(register)(req, res, next);
 });
